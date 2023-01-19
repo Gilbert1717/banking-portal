@@ -5,6 +5,8 @@ using McbaSystem.Models;
 //
 public class MenuService
 {
+    private readonly decimal atmWithdraw = -0.05m;
+    private readonly decimal accountTransfer = -0.1m;
     private readonly McbaContext _context;
     public MenuService(McbaContext context) => _context = context;
     
@@ -26,10 +28,25 @@ public class MenuService
         AddTransaction(transactionType, comment, amount, account);
         account.Balance += amount;
         _context.Update(account);
-        _context.SaveChanges();
+    }
+
+    public void WithdrawServiceFeeCharge(Account account)
+    {
+        if (TransactionFeeValidation(account.Transactions))
+        {
+            HandleTransaction(TransactionType.ServiceCharge, "Withdrawal fee", atmWithdraw, account);
+        }
     }
     
-    private bool TransactionFeeValidation(List<Transaction> transactions)
+    public void TransferServiceFeeCharge(Account account)
+    {
+        if (TransactionFeeValidation(account.Transactions))
+        {
+            HandleTransaction(TransactionType.ServiceCharge, "Account transfer fee", accountTransfer, account);
+        }
+    }
+    
+    public bool TransactionFeeValidation(List<Transaction> transactions)
     {
         int count = 0;
         foreach (var transaction in transactions)
