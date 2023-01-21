@@ -4,7 +4,6 @@ using McbaSystem.Models;
 using McbaSystem.Utilities;
 using McbaSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace McbaSystem.Controllers;
 
@@ -25,11 +24,13 @@ public class AccountController : Controller
         _menuService = new MenuService(context);
     }
 
-
+    /**
+     * Default to land on Deposit page if link is not provided.
+     */
     public async Task<IActionResult> Index(string link = "Deposit")
     {
         return View(
-            new AccountIndexViewModel()
+            new AccountIndexViewModel
             {
                 Customer = await _context.Customers.FindAsync(CustomerID),
                 Action = link
@@ -40,7 +41,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Deposit(int id)
     {
         return View(
-            new AccountActionViewModel()
+            new AccountActionViewModel
             {
                 Account = await _context.Accounts.FindAsync(id)
             });
@@ -50,9 +51,9 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Deposit(int id, AccountActionViewModel model)
     {
-        Account account = await _context.Accounts.FindAsync(id);
         AmountErrorMessage(model.Transaction.Amount);
-        model.Account = account;
+        model.Account = await _context.Accounts.FindAsync(id);
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -63,10 +64,9 @@ public class AccountController : Controller
 
 
     [HttpPost]
-    public IActionResult Confirm(Transaction transaction)
+    public async Task<IActionResult> Confirm(Transaction transaction)
     {
-        Account account = _context.Accounts.Include(x => x.Transactions)
-            .FirstOrDefault(x => x.AccountNumber == transaction.AccountNumber);
+        Account account = await _context.Accounts.FindAsync(transaction.AccountNumber);
 
         _menuService.HandleTransaction(transaction, account);
         return RedirectToAction(nameof(Index));
@@ -75,7 +75,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Withdraw(int id)
     {
         return View(
-            new AccountActionViewModel()
+            new AccountActionViewModel
             {
                 Account = await _context.Accounts.FindAsync(id)
             });
@@ -84,21 +84,20 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Withdraw(int id, AccountActionViewModel model)
     {
-        var account = await _context.Accounts.FindAsync(id);
+        Account account = await _context.Accounts.FindAsync(id);
         AmountErrorMessage(model.Transaction.Amount);
         WithdrawAmountValidation(model.Transaction.Amount, account);
 
+        model.Account = account;
 
         if (!ModelState.IsValid)
         {
-            model.Account = account;
             return View(model);
         }
 
         model.Transaction.Amount *= -1;
 
-
-        return RedirectToAction("Confirm", model);
+        return View("Confirm", model);
     }
 
 
@@ -125,7 +124,7 @@ public class AccountController : Controller
 
     //Todo: ScheduledBill
     [HttpPost]
-    // public async Task<IActionResult> ScheduledBill(int id, AccountPageViewModel model)
+    // public async Task<IActionResult> BillPay(int id, AccountPageViewModel model)
     // {
     //     var account = await _context.Accounts.FindAsync(id);
     //     AmountErrorMessage(model.Transaction.Amount);
@@ -155,6 +154,6 @@ public class AccountController : Controller
     public void WithdrawAmountValidation(decimal amount, Account account)
     {
         if (account.InsufficientAmount(amount))
-            ModelState.AddModelError(nameof(amount), "Insufficient balance");
+            ModelState.AddModelError("Transaction.Amount", "Insufficient balance");
     }
 }
