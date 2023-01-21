@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace McbaSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,9 +17,11 @@ namespace McbaSystem.Migrations
                 {
                     CustomerID = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    TFN = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     City = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
-                    PostCode = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true)
+                    PostCode = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: true),
+                    Mobile = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,7 +86,7 @@ namespace McbaSystem.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transactions", x => x.TransactionID);
-                    table.CheckConstraint("CH_Transaction_Amount", "Amount > 0");
+                    table.CheckConstraint("CH_Transaction_Amount", "Amount != 0");
                     table.ForeignKey(
                         name: "FK_Transactions_Accounts_AccountNumber",
                         column: x => x.AccountNumber,

@@ -25,7 +25,7 @@ public class McbaContext : DbContext
             b.HasCheckConstraint("CH_Login_PasswordHash", "len(PasswordHash) = 94");
         });
         builder.Entity<Account>().ToTable(b => b.HasCheckConstraint("CH_Account_Balance", "Balance >= 0"));
-        builder.Entity<Transaction>().ToTable(b => b.HasCheckConstraint("CH_Transaction_Amount", "Amount > 0"));
+        builder.Entity<Transaction>().ToTable(b => b.HasCheckConstraint("CH_Transaction_Amount", "Amount != 0"));
 
         // Configure ambiguous Account.Transactions navigation property relationship.
         builder.Entity<Transaction>().

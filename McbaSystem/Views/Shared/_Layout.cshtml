@@ -38,12 +38,24 @@
                         }
                     </ul>
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                         @if(isLoggedIn) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Customer" asp-action="Index">My Accounts</a>
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Deposit">Deposit</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Withdraw">Withdraw</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Transfer">Transfer</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="BillPay">BillPay</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="My Statements">My Statements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="My Profile">My Profile</a>
                             </li>
                         }
                     </ul>
@@ -64,7 +76,7 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/sync-input.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", false)
 </body>
 </html>

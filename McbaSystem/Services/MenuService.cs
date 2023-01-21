@@ -5,31 +5,55 @@ using McbaSystem.Models;
 //
 public class MenuService
 {
+    private readonly decimal atmWithdraw = -0.05m;
+    private readonly decimal accountTransfer = -0.1m;
     private readonly McbaContext _context;
     public MenuService(McbaContext context) => _context = context;
     
-    public void AddTransaction(TransactionType transactionType, string comment, decimal amount, Account account)
-    {
-        Transaction deposit = new Transaction
-        {
-            TransactionType = transactionType,
-            AccountNumber = account.AccountNumber,
-            Comment = comment,
-            Amount = amount,
-            TransactionTimeUtc = DateTime.Now.ToUniversalTime()
-        };
-        _context.Add(deposit);
-    }
     
-    public void HandleTransaction(TransactionType transactionType, string comment, decimal amount, Account account)
+    
+    public void HandleTransaction(Transaction transaction, Account account)
     {
-        AddTransaction(transactionType, comment, amount, account);
-        account.Balance += amount;
+        transaction.TransactionTimeUtc = DateTime.Now.ToUniversalTime();
+        _context.Add(transaction);
+        account.Balance += transaction.Amount;
         _context.Update(account);
-        _context.SaveChanges();
+        _context.SaveChangesAsync();
+    }
+
+    public void WithdrawServiceFeeCharge(Account account)
+    {
+        if (TransactionFeeValidation(account.Transactions))
+        {
+            Transaction transaction = new Transaction()
+            {
+                TransactionType = TransactionType.ServiceCharge,
+                Comment = "Withdrawal fee",
+                AccountNumber = account.AccountNumber,
+                Amount = atmWithdraw,
+                TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+            };
+            HandleTransaction(transaction,account);
+        }
     }
     
-    private bool TransactionFeeValidation(List<Transaction> transactions)
+    public void TransferServiceFeeCharge(Account account)
+    {
+        if (TransactionFeeValidation(account.Transactions))
+        {
+            Transaction transaction = new Transaction()
+            {
+                TransactionType = TransactionType.ServiceCharge,
+                Comment = "Account transfer fee",
+                AccountNumber = account.AccountNumber,
+                Amount = accountTransfer,
+                TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+            };
+            HandleTransaction(transaction,account);
+        }
+    }
+    
+    public bool TransactionFeeValidation(List<Transaction> transactions)
     {
         int count = 0;
         foreach (var transaction in transactions)
