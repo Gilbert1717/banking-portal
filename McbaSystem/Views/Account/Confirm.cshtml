@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model McbaSystem.ViewModels.AccountActionViewModel
+@{
+    ViewData["Title"] = "ConfirmationPage";
+}
+
+<h1 class="display-4">Account Number @Model.Account.AccountNumber (@Model.Account.AccountType)</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div>
+            <h4>Confirm your transaction</h4>
+            <hr/>
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Transaction.TransactionType)
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Transaction.TransactionType.ToString()
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Transaction.DestinationAccountNumber)
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Transaction.DestinationAccountNumber.ToString()
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Transaction.Amount)
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Transaction.Amount.ToString(format: "C")
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Transaction.Comment)
+                </dt>
+                <dd class="col-sm-10">
+                    @Model.Transaction.Comment
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<div>
+    <form asp-action="Confirm">
+        <input type="hidden" name="AccountNumber" value="@Model.Transaction.AccountNumber"/>
+        <input type="hidden" name="DestinationAccountNumber" value="@Model.Transaction.DestinationAccountNumber"/>
+        <input type="hidden" name="Amount" value="@Model.Transaction.Amount"/>
+        <input type="hidden" name="Comment" value="@Model.Transaction.Comment"/>
+        <input type="hidden" name="TransactionType" value="@Model.Transaction.TransactionType"/>
+        <a asp-action="Index">Cancel</a> |
+        <input type="submit" value="Confirm" class="btn btn-primary"/>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

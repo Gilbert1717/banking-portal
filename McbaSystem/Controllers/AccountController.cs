@@ -1,0 +1,160 @@
+﻿using McbaSystem.Data;
+using McbaSystem.Filters;
+using McbaSystem.Models;
+using McbaSystem.Utilities;
+using McbaSystem.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace McbaSystem.Controllers;
+
+// Can add authorize attribute to controllers.
+[AuthorizeCustomer]
+public class AccountController : Controller
+{
+    private readonly McbaContext _context;
+
+
+    private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
+
+    private readonly MenuService _menuService;
+
+    public AccountController(McbaContext context)
+    {
+        _context = context;
+        _menuService = new MenuService(context);
+    }
+
+
+    public async Task<IActionResult> Index(string link = "Deposit")
+    {
+        return View(
+            new AccountIndexViewModel()
+            {
+                Customer = await _context.Customers.FindAsync(CustomerID),
+                Action = link
+            }
+        );
+    }
+
+    public async Task<IActionResult> Deposit(int id)
+    {
+        return View(
+            new AccountActionViewModel()
+            {
+                Account = await _context.Accounts.FindAsync(id)
+            });
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Deposit(int id, AccountActionViewModel model)
+    {
+        Account account = await _context.Accounts.FindAsync(id);
+        AmountErrorMessage(model.Transaction.Amount);
+        model.Account = account;
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        return View("Confirm", model);
+    }
+
+
+    [HttpPost]
+    public IActionResult Confirm(Transaction transaction)
+    {
+        Account account = _context.Accounts.Include(x => x.Transactions)
+            .FirstOrDefault(x => x.AccountNumber == transaction.AccountNumber);
+
+        _menuService.HandleTransaction(transaction, account);
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Withdraw(int id)
+    {
+        return View(
+            new AccountActionViewModel()
+            {
+                Account = await _context.Accounts.FindAsync(id)
+            });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Withdraw(int id, AccountActionViewModel model)
+    {
+        var account = await _context.Accounts.FindAsync(id);
+        AmountErrorMessage(model.Transaction.Amount);
+        WithdrawAmountValidation(model.Transaction.Amount, account);
+
+
+        if (!ModelState.IsValid)
+        {
+            model.Account = account;
+            return View(model);
+        }
+
+        model.Transaction.Amount *= -1;
+
+
+        return RedirectToAction("Confirm", model);
+    }
+
+
+    //Todo: Transfer
+    // [HttpPost]
+    // public async Task<IActionResult> Transfer(int id, AccountPageViewModel model)
+    // {
+    //     var account = await _context.Accounts.FindAsync(id);
+    //     AmountErrorMessage(model.Transaction.Amount);
+    //     WithdrawAmountValidation(model.Transaction.Amount, account);
+    //     
+    //
+    //     if (!ModelState.IsValid)
+    //     {
+    //         model.Account = account;
+    //         return View(model);
+    //     }
+    //
+    //     model.Transaction.Amount *= -1;
+    //     
+    //
+    //     return RedirectToAction("Confirm", model);
+    // }
+
+    //Todo: ScheduledBill
+    [HttpPost]
+    // public async Task<IActionResult> ScheduledBill(int id, AccountPageViewModel model)
+    // {
+    //     var account = await _context.Accounts.FindAsync(id);
+    //     AmountErrorMessage(model.Transaction.Amount);
+    //     WithdrawAmountValidation(model.Transaction.Amount, account);
+    //     if (!ModelState.IsValid)
+    //     {
+    //         ViewBag.Amount = model.Transaction.Amount;
+    //         ViewBag.Comment = model.Transaction.Comment;
+    //         return View("Deposit", model);
+    //     }
+    //
+    //     _menuService.HandleTransaction(TransactionType.Withdraw, model.Transaction.Comment,
+    //         model.Transaction.Amount * -1, account);
+    //     _menuService.WithdrawServiceFeeCharge(account);
+    //     await _context.SaveChangesAsync();
+    //     return RedirectToAction(nameof(Index));
+    // }
+    private void AmountErrorMessage(decimal amount)
+    {
+        if (amount <= 0)
+            ModelState.AddModelError("Transaction.Amount", "Amount must be positive.");
+
+        if (amount.HasMoreThanTwoDecimalPlaces())
+            ModelState.AddModelError("Transaction.Amount", "Amount cannot have more than 2 decimal places.");
+    }
+
+    public void WithdrawAmountValidation(decimal amount, Account account)
+    {
+        if (account.InsufficientAmount(amount))
+            ModelState.AddModelError(nameof(amount), "Insufficient balance");
+    }
+}

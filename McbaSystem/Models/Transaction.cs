@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace McbaSystem.Models;
@@ -24,11 +25,11 @@ public class Transaction
     [ForeignKey("DestinationAccount")]
     public int? DestinationAccountNumber { get; set; }
     public virtual Account DestinationAccount { get; set; }
-
+    
     [Column(TypeName = "money")]
     public decimal Amount { get; set; }
 
-    [StringLength(30, ErrorMessage = "Name length can't be more than 30.")]
+    [StringLength(30, ErrorMessage = "Comment cannot exceed 30 characters")]
     public string Comment { get; set; }
 
     public DateTime TransactionTimeUtc { get; set; }

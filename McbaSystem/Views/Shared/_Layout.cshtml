@@ -38,12 +38,21 @@
                         }
                     </ul>
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                         @if(isLoggedIn) {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="AccountPage" asp-action="Index">My Accounts</a>
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Deposit">Deposit</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Withdraw">Withdraw</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="Transfer">Transfer</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="My Statements">My Statements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Index" asp-route-link="My Profile">My Profile</a>
                             </li>
                         }
                     </ul>

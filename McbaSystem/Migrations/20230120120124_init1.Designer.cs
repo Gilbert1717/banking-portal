@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace McbaSystem.Migrations
 {
     [DbContext(typeof(McbaContext))]
-    [Migration("20230117140633_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230120120124_init1")]
+    partial class init1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -65,6 +65,10 @@ namespace McbaSystem.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<string>("Mobile")
+                        .HasMaxLength(12)
+                        .HasColumnType("nvarchar(12)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -73,6 +77,10 @@ namespace McbaSystem.Migrations
                     b.Property<string>("PostCode")
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("TFN")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CustomerID");
 
@@ -140,7 +148,7 @@ namespace McbaSystem.Migrations
 
                     b.ToTable("Transactions", t =>
                         {
-                            t.HasCheckConstraint("CH_Transaction_Amount", "Amount > 0");
+                            t.HasCheckConstraint("CH_Transaction_Amount", "Amount != 0");
                         });
                 });
 

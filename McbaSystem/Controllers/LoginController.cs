@@ -32,7 +32,7 @@ public class LoginController : Controller
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
         HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
 
-        return RedirectToAction("Index", "AccountPage");
+        return RedirectToAction("Index", "Account");
     }
 
     [Route("LogoutNow")]
