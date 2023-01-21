@@ -4,6 +4,7 @@ using McbaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace McbaSystem.Migrations
 {
     [DbContext(typeof(McbaContext))]
-    partial class McbaContextModelSnapshot : ModelSnapshot
+    [Migration("20230121095554_addState")]
+    partial class addState
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,8 +83,8 @@ namespace McbaSystem.Migrations
                         .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("TFN")
-                        .HasMaxLength(11)
-                        .HasColumnType("nvarchar(11)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("CustomerID");
 
@@ -104,8 +107,7 @@ namespace McbaSystem.Migrations
 
                     b.HasKey("LoginID");
 
-                    b.HasIndex("CustomerID")
-                        .IsUnique();
+                    b.HasIndex("CustomerID");
 
                     b.ToTable("Logins", t =>
                         {
@@ -168,8 +170,8 @@ namespace McbaSystem.Migrations
             modelBuilder.Entity("McbaSystem.Models.Login", b =>
                 {
                     b.HasOne("McbaSystem.Models.Customer", "Customer")
-                        .WithOne("Login")
-                        .HasForeignKey("McbaSystem.Models.Login", "CustomerID")
+                        .WithMany()
+                        .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -201,8 +203,6 @@ namespace McbaSystem.Migrations
             modelBuilder.Entity("McbaSystem.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
-
-                    b.Navigation("Login");
                 });
 #pragma warning restore 612, 618
         }
