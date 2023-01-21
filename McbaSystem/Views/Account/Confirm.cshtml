@@ -1,7 +1,6 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model McbaSystem.ViewModels.AccountActionViewModel
+﻿@model McbaSystem.ViewModels.Account.ActionViewModel
 @{
-    ViewData["Title"] = "ConfirmationPage";
+    ViewData["Title"] = "Confirmation Page";
 }
 
 <h1 class="display-4">Account Number @Model.Account.AccountNumber (@Model.Account.AccountType)</h1>
@@ -52,8 +51,3 @@
         <input type="submit" value="Confirm" class="btn btn-primary"/>
     </form>
 </div>
-
-
-@section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-}

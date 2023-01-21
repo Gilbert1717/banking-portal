@@ -1,8 +1,8 @@
 using McbaSystem.Models;
 
-namespace McbaSystem.ViewModels;
+namespace McbaSystem.ViewModels.Account;
 
-public class AccountIndexViewModel
+public class IndexViewModel
 {
     public Customer Customer { get; set; }
     public string Action { get; set; }

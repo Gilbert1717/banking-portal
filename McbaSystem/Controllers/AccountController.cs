@@ -2,7 +2,7 @@
 using McbaSystem.Filters;
 using McbaSystem.Models;
 using McbaSystem.Utilities;
-using McbaSystem.ViewModels;
+using McbaSystem.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
 
 namespace McbaSystem.Controllers;
@@ -30,7 +30,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Index(string link = "Deposit")
     {
         return View(
-            new AccountIndexViewModel
+            new IndexViewModel
             {
                 Customer = await _context.Customers.FindAsync(CustomerID),
                 Action = link
@@ -41,7 +41,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Deposit(int id)
     {
         return View(
-            new AccountActionViewModel
+            new ActionViewModel
             {
                 Account = await _context.Accounts.FindAsync(id)
             });
@@ -49,7 +49,7 @@ public class AccountController : Controller
 
 
     [HttpPost]
-    public async Task<IActionResult> Deposit(int id, AccountActionViewModel model)
+    public async Task<IActionResult> Deposit(int id, ActionViewModel model)
     {
         AmountErrorMessage(model.Transaction.Amount);
         model.Account = await _context.Accounts.FindAsync(id);
@@ -75,14 +75,14 @@ public class AccountController : Controller
     public async Task<IActionResult> Withdraw(int id)
     {
         return View(
-            new AccountActionViewModel
+            new ActionViewModel
             {
                 Account = await _context.Accounts.FindAsync(id)
             });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Withdraw(int id, AccountActionViewModel model)
+    public async Task<IActionResult> Withdraw(int id, ActionViewModel model)
     {
         Account account = await _context.Accounts.FindAsync(id);
         AmountErrorMessage(model.Transaction.Amount);

@@ -21,4 +21,8 @@
     <Folder Include="Migrations" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Views\Profile\UpdatePassword.cshtml" />
+  </ItemGroup>
+
 </Project>

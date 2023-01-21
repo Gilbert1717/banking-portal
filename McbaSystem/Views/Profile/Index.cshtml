@@ -1,0 +1,59 @@
+﻿@model Customer
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<h1 class="display-4">My Profile</h1>
+
+<div>
+    <hr/>
+    <dl class="row">
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.Name)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.Name ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.TFN)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.TFN ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.Address)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.Address ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.City)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.City ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.State)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.State ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.PostCode)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.PostCode ?? "-")
+        </dd>
+        <dt class="col-sm-1 text-right">
+            @Html.DisplayNameFor(customer => customer.Mobile)
+        </dt>
+        <dd class="col-sm-11">
+            @(Model.Mobile ?? "-")
+        </dd>
+    </dl>
+</div>
+
+<div>
+    <a asp-action="EditProfile" class="btn btn-primary">Update Profile</a>
+    <a asp-action="UpdatePassword" class="btn btn-primary">Change Password</a>
+</div>
