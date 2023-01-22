@@ -1,22 +1,48 @@
-﻿@{
+﻿@model Login
+@{
     ViewData["Title"] = "Home";
 }
 
-<div>
+<div class="text-center">
+    <img src="~/img/bank.png" alt="bank"/>
     <h1 class="display-4">Most Common Bank of Australia</h1>
-    
-    <div class="text-center">
-        <img src="~/img/bank.jpg" alt="bank" />
-    </div>
+    <hr/>
+
+    @if (!Context.Session.GetInt32(nameof(Customer.CustomerID)).HasValue)
+    {
+        <h4>Please login to proceed</h4>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+
+            <div class="col-md-4">
+                <form asp-action="Login">
+                    <div class="form-group">
+                        <label asp-for="LoginID" class="control-label"></label>
+                        <input asp-for="LoginID" class="form-control"/>
+                        <span asp-validation-for="LoginID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password" class="control-label">Password</label>
+                        <input id="Password" name="Password" type="password" class="form-control"
+                               data-val="true" data-val-required="The Password field is required."/>
+                        @Html.ValidationMessage("Password", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Login" class="btn btn-primary"/>
+                    </div>
+                    @Html.ValidationMessage("LoginFailed", new { @class = "text-danger" })
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h4>G'day, @Context.Session.GetString(nameof(Customer.Name))</h4>
+        <h4>Nice to see you again :)</h4>
+    }
 </div>
 
-<hr />
-
-<h3>Example links</h3>
-
-<p>
-    <a asp-controller="Login" asp-action="Login">Login link using Tag Helper</a>
-</p>
-<p>
-    @Html.ActionLink("Login link using Html Helper", "Login", "Login")
-</p>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
