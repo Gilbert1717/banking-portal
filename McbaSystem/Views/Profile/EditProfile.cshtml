@@ -32,15 +32,12 @@
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
             <div class="form-group">
-                @{
-                    var states = new HashSet<string> { "NSW", "VIC", "ACT", "SA", "TAS", "QLD", "NT", "WA" };
-                }
                 <label asp-for="State" class="control-label"></label>
                 <select name="State" id="State" class="form-control">
                     <option value="" selected>-</option>
-                    @foreach (var state in states)
+                    @foreach (var state in Enum.GetValues(typeof(State)))
                     {
-                        <option value="@state" selected="@(state.Equals(Model.State))">@state</option>
+                        <option value="@state" selected="@(state.ToString().Equals(Model.State))">@state</option>
                     }
                 </select>
                 <span asp-validation-for="State" class="text-danger"></span>
