@@ -75,12 +75,17 @@ public class ProfileController : Controller
 
     private void EditProfileValidation(Customer customer)
     {
-        if (!Regex.IsMatch(customer.TFN, @"[0-9]{3} [0-9]{3} [0-9]{3}"))
+        if (customer.PostCode != null && !Regex.IsMatch(customer.PostCode, @"[0-9]{4}"))
+        {
+            ModelState.AddModelError(nameof(customer.PostCode), "Invalid postcode");
+        }
+
+        if (customer.TFN != null && !Regex.IsMatch(customer.TFN, @"[0-9]{3} [0-9]{3} [0-9]{3}"))
         {
             ModelState.AddModelError(nameof(customer.TFN), "Incorrect format - please follow XXX XXX XXX");
         }
 
-        if (!Regex.IsMatch(customer.Mobile, @"04[0-9]{2} [0-9]{3} [0-9]{3}"))
+        if (customer.Mobile != null && !Regex.IsMatch(customer.Mobile, @"04[0-9]{2} [0-9]{3} [0-9]{3}"))
         {
             ModelState.AddModelError(nameof(customer.Mobile), "Incorrect format - please follow 04XX XXX XXX");
         }
