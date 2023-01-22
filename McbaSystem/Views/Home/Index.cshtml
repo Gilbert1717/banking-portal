@@ -6,11 +6,11 @@
 <div class="text-center">
     <img src="~/img/bank.png" alt="bank"/>
     <h1 class="display-4">Most Common Bank of Australia</h1>
+    <hr/>
 
     @if (!Context.Session.GetInt32(nameof(Customer.CustomerID)).HasValue)
     {
         <h4>Please login to proceed</h4>
-        <hr/>
 
         <div class="row">
             <div class="col-md-4"></div>
@@ -35,6 +35,11 @@
                 </form>
             </div>
         </div>
+    }
+    else
+    {
+        <h4>G'day, @Context.Session.GetString(nameof(Customer.Name))</h4>
+        <h4>Nice to see you again :)</h4>
     }
 </div>
 

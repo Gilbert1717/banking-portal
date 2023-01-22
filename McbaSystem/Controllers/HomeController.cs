@@ -38,7 +38,7 @@ public class HomeController : Controller
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
         HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
 
-        return RedirectToAction("Index", "Account");
+        return RedirectToAction(nameof(Index));
     }
 
     public IActionResult Logout()
@@ -46,6 +46,6 @@ public class HomeController : Controller
         // Logout customer.
         HttpContext.Session.Clear();
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction(nameof(Index));
     }
 }
