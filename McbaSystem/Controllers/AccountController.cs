@@ -67,8 +67,16 @@ public class AccountController : Controller
     public async Task<IActionResult> Confirm(Transaction transaction)
     {
         Account account = await _context.Accounts.FindAsync(transaction.AccountNumber);
-
         _menuService.HandleTransaction(transaction, account);
+        switch (transaction.TransactionType)
+        {
+            case TransactionType.Withdraw:
+                _menuService.WithdrawServiceFeeCharge(account);
+                break;
+            case TransactionType.Transfer:
+                _menuService.TransferServiceFeeCharge(account);
+                break;
+        }
         return RedirectToAction(nameof(Index));
     }
 
