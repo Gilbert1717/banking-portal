@@ -4,6 +4,7 @@ using McbaSystem.Models;
 using McbaSystem.Utilities;
 using McbaSystem.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace McbaSystem.Controllers;
 
@@ -66,18 +67,23 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Confirm(Transaction transaction)
     {
-        Account account = await _context.Accounts.FindAsync(transaction.AccountNumber);
+        Account account = await _context.Accounts.Include(x => x.Transactions)
+            .Where(x => x.AccountNumber == transaction.AccountNumber).FirstOrDefaultAsync<Account>();
+        // FindAsync(transaction.AccountNumber);
         _menuService.HandleTransaction(transaction, account);
         switch (transaction.TransactionType)
         {
             case TransactionType.Withdraw:
+                List<Transaction> transactions = account.Transactions;
                 _menuService.WithdrawServiceFeeCharge(account);
                 break;
             case TransactionType.Transfer:
                 _menuService.TransferServiceFeeCharge(account);
                 break;
         }
-        return RedirectToAction(nameof(Index));
+        _context.Update(account);
+        await _context.SaveChangesAsync();
+        return RedirectToAction("Index","Home");
     }
 
     public async Task<IActionResult> Withdraw(int id)
