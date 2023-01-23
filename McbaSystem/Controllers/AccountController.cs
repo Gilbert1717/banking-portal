@@ -78,6 +78,17 @@ public class AccountController : Controller
                 _menuService.WithdrawServiceFeeCharge(account);
                 break;
             case TransactionType.Transfer:
+                var destinationAccountNumber = (int)transaction.DestinationAccountNumber;
+                Transaction incomingTransaction = new Transaction()
+                {
+                    TransactionType = TransactionType.Transfer,
+                    Comment = transaction.Comment,
+                    AccountNumber = destinationAccountNumber,
+                    Amount = transaction.Amount * -1,
+                    TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+                };
+                var destinationAccount = await _context.Accounts.FindAsync(destinationAccountNumber);
+                _menuService.HandleTransaction(incomingTransaction, destinationAccount);
                 _menuService.TransferServiceFeeCharge(account);
                 break;
         }
@@ -115,27 +126,53 @@ public class AccountController : Controller
         return View("Confirm", model);
     }
 
+    public async Task<IActionResult> Transfer(int id)
+    {
+        return View(
+            new ActionViewModel
+            {
+                Account = await _context.Accounts.FindAsync(id)
+            });
+    }
 
-    //Todo: Transfer
-    // [HttpPost]
-    // public async Task<IActionResult> Transfer(int id, AccountPageViewModel model)
-    // {
-    //     var account = await _context.Accounts.FindAsync(id);
-    //     AmountErrorMessage(model.Transaction.Amount);
-    //     WithdrawAmountValidation(model.Transaction.Amount, account);
-    //     
-    //
-    //     if (!ModelState.IsValid)
-    //     {
-    //         model.Account = account;
-    //         return View(model);
-    //     }
-    //
-    //     model.Transaction.Amount *= -1;
-    //     
-    //
-    //     return RedirectToAction("Confirm", model);
-    // }
+    [HttpPost]
+    public async Task<IActionResult> Transfer(int id, ActionViewModel model)
+    {
+        var account = await _context.Accounts.FindAsync(id);
+        model.Account = account;
+        AmountErrorMessage(model.Transaction.Amount);
+        DestinationAccountNumberValidation(model.Transaction.DestinationAccountNumber, account);
+        WithdrawAmountValidation(model.Transaction.Amount, account);
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        model.Transaction.Amount *= -1;
+        return View("Confirm", model);
+    }
+
+    private void DestinationAccountNumberValidation(int? id, Account account)
+    {
+        if (id == null)
+        {
+            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Destination account number cannot be empty");
+        }
+
+        else if (id == account.AccountNumber)
+        {
+            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Unable to transfer money to the same account");
+        }
+        else
+        {
+            var destinationAccount = _context.Accounts.Find(id);
+            if (destinationAccount == null)
+            {
+                ModelState.AddModelError("Transaction.DestinationAccountNumber", "The account number does not exist");
+            }
+        }
+    }
 
     //Todo: ScheduledBill
     [HttpPost]
