@@ -28,7 +28,7 @@ public class AccountController : Controller
     /**
      * Default to land on Deposit page if link is not provided.
      */
-    public async Task<IActionResult> Index(string link = "Deposit")
+    public async Task<IActionResult> Index(string link)
     {
         return View(
             new IndexViewModel
@@ -81,9 +81,10 @@ public class AccountController : Controller
                 _menuService.TransferServiceFeeCharge(account);
                 break;
         }
+
         _context.Update(account);
         await _context.SaveChangesAsync();
-        return RedirectToAction("Index","Home");
+        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Withdraw(int id)
