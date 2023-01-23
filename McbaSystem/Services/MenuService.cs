@@ -17,8 +17,6 @@ public class MenuService
         transaction.TransactionTimeUtc = DateTime.Now.ToUniversalTime();
         _context.Add(transaction);
         account.Balance += transaction.Amount;
-        _context.Update(account);
-        _context.SaveChangesAsync();
     }
 
     public void WithdrawServiceFeeCharge(Account account)
