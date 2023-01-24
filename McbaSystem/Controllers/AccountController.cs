@@ -157,12 +157,14 @@ public class AccountController : Controller
     {
         if (id == null)
         {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Destination account number cannot be empty");
+            ModelState.AddModelError("Transaction.DestinationAccountNumber",
+                "Destination account number cannot be empty");
         }
 
         else if (id == account.AccountNumber)
         {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Unable to transfer money to the same account");
+            ModelState.AddModelError("Transaction.DestinationAccountNumber",
+                "Unable to transfer money to the same account");
         }
         else
         {
@@ -174,26 +176,35 @@ public class AccountController : Controller
         }
     }
 
-    //Todo: ScheduledBill
+    public async Task<IActionResult> BillPay(int id)
+    {
+        return View(
+            new BillPayViewModel
+            {
+                Payees = await _context.Payees.ToListAsync()
+            });
+    }
+
     [HttpPost]
-    // public async Task<IActionResult> BillPay(int id, AccountPageViewModel model)
-    // {
-    //     var account = await _context.Accounts.FindAsync(id);
-    //     AmountErrorMessage(model.Transaction.Amount);
-    //     WithdrawAmountValidation(model.Transaction.Amount, account);
-    //     if (!ModelState.IsValid)
-    //     {
-    //         ViewBag.Amount = model.Transaction.Amount;
-    //         ViewBag.Comment = model.Transaction.Comment;
-    //         return View("Deposit", model);
-    //     }
-    //
-    //     _menuService.HandleTransaction(TransactionType.Withdraw, model.Transaction.Comment,
-    //         model.Transaction.Amount * -1, account);
-    //     _menuService.WithdrawServiceFeeCharge(account);
-    //     await _context.SaveChangesAsync();
-    //     return RedirectToAction(nameof(Index));
-    // }
+    public async Task<IActionResult> BillPay(int id, BillPayViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(new BillPayViewModel
+            {
+                Payees = await _context.Payees.ToListAsync(),
+                BillPay = model.BillPay
+            });
+        }
+
+        BillPay billPay = model.BillPay;
+        billPay.AccountNumber = id;
+        _context.Add(billPay);
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
     private void AmountErrorMessage(decimal amount)
     {
         if (amount <= 0)
