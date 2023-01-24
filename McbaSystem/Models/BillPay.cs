@@ -38,6 +38,6 @@ public class BillPay
     [Required, Column(TypeName = "char")]
     public BillPayPeriod Period { get; set; }
 
-    // [Required, Column(TypeName = "char")] 
-    // public BillPayStatus Status { get; set; } = BillPayStatus.Pending;
+    [Required, Column(TypeName = "char")] 
+    public BillPayStatus Status { get; set; } = BillPayStatus.Pending;
 }
