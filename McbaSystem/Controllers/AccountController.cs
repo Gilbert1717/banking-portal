@@ -14,7 +14,6 @@ public class AccountController : Controller
 {
     private readonly McbaContext _context;
 
-
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
     private readonly MenuService _menuService;
@@ -71,12 +70,11 @@ public class AccountController : Controller
         switch (transaction.TransactionType)
         {
             case TransactionType.Withdraw:
-                List<Transaction> transactions = account.Transactions;
                 _menuService.WithdrawServiceFeeCharge(account);
                 break;
             case TransactionType.Transfer:
                 var destinationAccountNumber = (int)transaction.DestinationAccountNumber;
-                Transaction incomingTransaction = new Transaction()
+                Transaction incomingTransaction = new Transaction
                 {
                     TransactionType = TransactionType.Transfer,
                     Comment = transaction.Comment,
@@ -157,7 +155,6 @@ public class AccountController : Controller
             ModelState.AddModelError("Transaction.DestinationAccountNumber",
                 "Destination account number cannot be empty");
         }
-
         else if (id == account.AccountNumber)
         {
             ModelState.AddModelError("Transaction.DestinationAccountNumber",
@@ -173,66 +170,6 @@ public class AccountController : Controller
         }
     }
 
-    public async Task<IActionResult> CreateBillPay(int id)
-    {
-        return View(
-            new BillPayViewModel
-            {
-                Payees = await _context.Payees.ToListAsync(),
-                AccountNumber = id
-            });
-    }
-
-    public async Task<IActionResult> CancelBillPay(int id)
-    {
-        var billPay = await _context.BillPays.FindAsync(id);
-        var account = billPay.Account;
-        _context.Remove(billPay);
-        await _context.SaveChangesAsync();
-        return View("BillPay", account);
-    }
-
-    public async Task<IActionResult> UpdateBillPay(int id)
-    {
-        var billPay = await _context.BillPays.FindAsync(id);
-
-        return View("CreateBillPay", new BillPayViewModel
-        {
-            Payees = await _context.Payees.ToListAsync(),
-            BillPay = billPay,
-            AccountNumber = billPay.AccountNumber,
-            Action = "Update"
-        });
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateBillPay(BillPayViewModel model)
-    {
-        var billPay = model.BillPay;
-        ScheduleTimeValidation(billPay.ScheduleTimeUtc);
-        if (!ModelState.IsValid)
-        {
-            return View(new BillPayViewModel
-            {
-                Payees = await _context.Payees.ToListAsync(),
-                BillPay = billPay,
-                AccountNumber = billPay.AccountNumber
-            });
-        }
-
-        billPay.ScheduleTimeUtc = billPay.ScheduleTimeUtc.ToUniversalTime();
-        _context.Add(billPay);
-        await _context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(BillPay), new { id = billPay.AccountNumber });
-    }
-
-    public async Task<IActionResult> BillPay(int id)
-    {
-        var account = await _context.Accounts.FindAsync(id);
-        return View(account);
-    }
-
     private void AmountErrorMessage(decimal amount)
     {
         if (amount <= 0)
@@ -246,11 +183,5 @@ public class AccountController : Controller
     {
         if (account.InsufficientAmount(amount))
             ModelState.AddModelError("Transaction.Amount", "Insufficient balance");
-    }
-
-    private void ScheduleTimeValidation(DateTime time)
-    {
-        if (time <= DateTime.Now)
-            ModelState.AddModelError("BillPay.ScheduleTimeUtc", "Please schedule a future payment");
     }
 }

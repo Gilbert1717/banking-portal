@@ -1,4 +1,4 @@
-﻿@model McbaSystem.ViewModels.Account.BillPayViewModel
+﻿@model McbaSystem.ViewModels.BillPay.FormViewModel
 @{
     ViewData["Title"] = $"{Model.Action} BillPay";
 }
@@ -7,8 +7,9 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateBillPay">
-            <input type="hidden" name="BillPay.AccountNumber" value="@Model.AccountNumber"/>
+        <form asp-action="@Model.Action">
+            <input type="hidden" name="BillPay.AccountNumber" value="@Model.BillPay.AccountNumber"/>
+            <input type="hidden" name="BillPay.BillPayID" value="@Model.BillPay.BillPayID"/>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="BillPay.PayeeID" class="control-label"></label>
@@ -28,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="BillPay.ScheduleTimeUtc" class="control-label"></label>
-                <input asp-for="BillPay.ScheduleTimeUtc" class="form-control" placeholder="XXX XXX XXX"/>
+                <input asp-for="BillPay.ScheduleTimeUtc" class="form-control"/>
                 <span asp-validation-for="BillPay.ScheduleTimeUtc" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -37,7 +38,7 @@
                     <option value="">- Please select Period -</option>
                     @foreach (var period in Enum.GetValues(typeof(BillPayPeriod)))
                     {
-                        <option value="@period" selected="@(period.ToString().Equals(Model.BillPay.Period))">@period.ToString()</option>
+                        <option value="@period" selected="@(period.ToString().Equals(Model.BillPay.Period.ToString()))">@period.ToString()</option>
                     }
                 </select>
                 <span asp-validation-for="BillPay.Period" class="text-danger"></span>
@@ -50,9 +51,9 @@
 </div>
 
 <div>
-    <a asp-action="BillPay" asp-route-id="@Model.AccountNumber">Back to Scheduled Payments</a>
+    <a asp-action="Index" asp-route-id="@Model.BillPay.AccountNumber">Back to Scheduled Payments</a>
     <br/>
-    <a asp-action="Index" asp-route-id="@Model.AccountNumber" asp-route-link="BillPay">Back to Accounts</a>
+    <a asp-action="Index" asp-controller="Account" asp-route-id="@Model.BillPay.AccountNumber" asp-route-link="BillPay">Back to Accounts</a>
 </div>
 
 @section Scripts {

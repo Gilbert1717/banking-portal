@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="Views\Account\BillPay.cshtml" />
+    <AdditionalFiles Include="Views\BillPay\Form.cshtml" />
     <AdditionalFiles Include="Views\Profile\UpdatePassword.cshtml" />
   </ItemGroup>
 

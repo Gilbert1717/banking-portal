@@ -2,19 +2,17 @@ using McbaSystem.Data;
 using McbaSystem.Models;
 using McbaSystem.Utilities;
 
-
 public class MenuService
 {
-    private readonly decimal atmWithdraw = -0.05m;
-    private readonly decimal accountTransfer = -0.1m;
+    private const decimal AtmWithdraw = -0.05m;
+    private const decimal AccountTransfer = -0.1m;
+    
     private readonly McbaContext _context;
     public MenuService(McbaContext context) => _context = context;
-    
-    
-    
+
     public void HandleTransaction(Transaction transaction, Account account)
     {
-        transaction.TransactionTimeUtc = DateTime.Now.ToUniversalTime();
+        transaction.TransactionTimeUtc = DateTime.UtcNow;
         _context.Add(transaction);
         account.Balance += transaction.Amount;
     }
@@ -28,15 +26,13 @@ public class MenuService
                 TransactionType = TransactionType.ServiceCharge,
                 Comment = "Withdrawal fee",
                 AccountNumber = account.AccountNumber,
-                Amount = atmWithdraw,
-                TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+                Amount = AtmWithdraw,
+                TransactionTimeUtc = DateTime.UtcNow
             };
-            HandleTransaction(transaction,account);
+            HandleTransaction(transaction, account);
         }
     }
 
-    
-    
     public void TransferServiceFeeCharge(Account account)
     {
         if (TransactionFeeValidation(account.Transactions))
@@ -46,14 +42,14 @@ public class MenuService
                 TransactionType = TransactionType.ServiceCharge,
                 Comment = "Account transfer fee",
                 AccountNumber = account.AccountNumber,
-                Amount = accountTransfer,
-                TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+                Amount = AccountTransfer,
+                TransactionTimeUtc = DateTime.UtcNow
             };
-            HandleTransaction(transaction,account);
+            HandleTransaction(transaction, account);
         }
     }
-    
-    public bool TransactionFeeValidation(List<Transaction> transactions)
+
+    private bool TransactionFeeValidation(List<Transaction> transactions)
     {
         int count = 0;
         foreach (var transaction in transactions)
@@ -67,29 +63,28 @@ public class MenuService
                     return true;
             }
         }
-    
+
         return false;
     }
-    
-    public async Task BillPayExecute(BillPay billPay)
-    {
 
+    public void BillPayExecute(BillPay billPay)
+    {
         if (billPay.Account.InsufficientAmount(billPay.Amount))
         {
             billPay.ErrorMessage = "Insufficient balance";
             _context.Update(billPay);
         }
-            
         else
         {
-            Transaction transaction = new Transaction()
+            Transaction transaction = new Transaction
             {
                 TransactionType = TransactionType.BillPay,
                 Comment = $"BillPay to {billPay.Payee.Name}",
                 AccountNumber = billPay.Account.AccountNumber,
                 Amount = billPay.Amount * -1,
-                TransactionTimeUtc = DateTime.Now.ToUniversalTime()
+                TransactionTimeUtc = DateTime.UtcNow
             };
+            
             HandleTransaction(transaction, billPay.Account);
             if (billPay.Period == BillPayPeriod.Monthly)
             {
