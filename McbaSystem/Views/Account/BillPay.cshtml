@@ -1,56 +1,60 @@
-﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model McbaSystem.ViewModels.Account.BillPayViewModel
+﻿@model Account
 @{
     ViewData["Title"] = "BillPay";
 }
 
-<h1 class="display-4">BillPay</h1>
+<div>
+    <h1 class="display-4">Welcome, @Model.Customer.Name</h1>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="BillPay">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="BillPay.PayeeID" class="control-label"></label>
-                <select name="BillPay.PayeeID" id="BillPay.PayeeID" class="form-control">
-                    <option value="">- Please select Payee -</option>
-                    @foreach (var payee in Model.Payees)
-                    {
-                        <option value="@payee.PayeeID">@payee.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="BillPay.PayeeID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BillPay.Amount" class="control-label"></label>
-                <input asp-for="BillPay.Amount" class="form-control"/>
-                <span asp-validation-for="BillPay.Amount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BillPay.ScheduleTimeUtc" class="control-label"></label>
-                <input asp-for="BillPay.ScheduleTimeUtc" class="form-control" placeholder="XXX XXX XXX"/>
-                <span asp-validation-for="BillPay.ScheduleTimeUtc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BillPay.Period" class="control-label"></label>
-                <select name="BillPay.Period" id="BillPay.Period" class="form-control">
-                    <option value="">- Please select Period -</option>
-                    @foreach (var period in Enum.GetValues(typeof(BillPayPeriod)))
-                    {
-                        <option value="@period">@period.ToString()</option>
-                    }
-                </select>
-                <span asp-validation-for="BillPay.Period" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Update" class="btn btn-primary"/>
-            </div>
-        </form>
-    </div>
+    <h3>Your Scheduled Payments - BillPays</h3>
+    @if (Model.BillPays.Count == 0)
+    {
+        <p>No schduled payment</p>
+    }
+    else
+    {
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].AccountNumber)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Payee)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Amount)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].ScheduleTimeUtc)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Period)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].ErrorMessage)</th>
+                <th></th>
+            </tr>
+            @foreach (var billPay in Model.BillPays)
+            {
+                <tr class="@(billPay.ErrorMessage != null ? "table-danger" : "")">
+                    <td>@Html.DisplayFor(x => billPay.AccountNumber)</td>
+                    <td>@Html.DisplayFor(x => billPay.Payee.Name)</td>
+                    <td>@Html.DisplayFor(x => billPay.Amount)</td>
+                    <td>@billPay.ScheduleTimeUtc.ToLocalTime()</td>
+                    <td>@Html.DisplayFor(x => billPay.Period)</td>
+                    <td>@Html.DisplayFor(x => billPay.ErrorMessage)</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           asp-action="CancelBillPay" asp-route-id="@billPay.BillPayID">
+                            Cancel
+                        </a>
+                        @if (billPay.ErrorMessage != null)
+                        {
+                            <a class="btn btn-sm btn-primary"
+                                    asp-action="UpdateBillPay" asp-route-id="@billPay.BillPayID">
+                                Update
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    }
 </div>
 
 <div>
-    <a asp-action="Index">Back to Profile</a>
+    <a asp-action="CreateBillPay" asp-route-id="@Model.AccountNumber" class="btn btn-primary">Create Bill Pay</a>
+    <br/>
+    <a asp-action="Index" asp-route-link="BillPay">Back to Accounts</a>
 </div>
 
 @section Scripts {

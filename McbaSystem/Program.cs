@@ -1,4 +1,5 @@
 using McbaSystem.Data;
+using McbaSystem.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Services.AddDbContext<McbaContext>(options =>
     // Enable lazy loading.
     options.UseLazyLoadingProxies();
 });
+
 
 // Store session into Web-Server memory.
 builder.Services.AddDistributedMemoryCache();
@@ -35,16 +37,12 @@ builder.Services.AddSession(options =>
 //    options.Cookie.IsEssential = true;
 //    options.IdleTimeout = TimeSpan.FromDays(7);
 //});
-
+builder.Services.AddHostedService<ScheduledBillPay>();
 builder.Services.AddControllersWithViews();
-
-// Bonus Material: Implement global authorisation check. Also see the AuthorizeCustomerAttribute.cs file.
-//builder.Services.AddControllersWithViews(options => options.Filters.Add(new AuthorizeCustomerAttribute()));
-
 var app = builder.Build();
 
 // Seed data.
-using(var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     // try
@@ -59,7 +57,7 @@ using(var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-if(!app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 
 app.UseHttpsRedirection();

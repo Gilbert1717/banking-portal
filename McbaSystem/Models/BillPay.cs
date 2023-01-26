@@ -9,14 +9,6 @@ public enum BillPayPeriod
     Monthly = 'M'
 }
 
-public enum BillPayStatus
-{
-    Pending = 'P',
-    Failed = 'F',
-    Successful = 'S',
-    Cancelled = 'C'
-}
-
 public class BillPay
 {
     public int BillPayID { get; set; }
@@ -30,6 +22,7 @@ public class BillPay
     public virtual Payee Payee { get; set; }
 
     [Column(TypeName = "money")] 
+    [DataType(DataType.Currency)]
     public decimal Amount { get; set; }
 
     [Display(Name = "When")]
@@ -38,6 +31,5 @@ public class BillPay
     [Required, Column(TypeName = "char")]
     public BillPayPeriod Period { get; set; }
 
-    [Required, Column(TypeName = "char")] 
-    public BillPayStatus Status { get; set; } = BillPayStatus.Pending;
+	public string ErrorMessage { get; set; }
 }

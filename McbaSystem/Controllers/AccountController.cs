@@ -25,9 +25,6 @@ public class AccountController : Controller
         _menuService = new MenuService(context);
     }
 
-    /**
-     * Default to land on Deposit page if link is not provided.
-     */
     public async Task<IActionResult> Index(string link)
     {
         return View(
@@ -69,7 +66,7 @@ public class AccountController : Controller
     {
         Account account = await _context.Accounts.Include(x => x.Transactions)
             .Where(x => x.AccountNumber == transaction.AccountNumber).FirstOrDefaultAsync<Account>();
-        // FindAsync(transaction.AccountNumber);
+
         _menuService.HandleTransaction(transaction, account);
         switch (transaction.TransactionType)
         {
@@ -176,33 +173,64 @@ public class AccountController : Controller
         }
     }
 
-    public async Task<IActionResult> BillPay(int id)
+    public async Task<IActionResult> CreateBillPay(int id)
     {
         return View(
             new BillPayViewModel
             {
-                Payees = await _context.Payees.ToListAsync()
+                Payees = await _context.Payees.ToListAsync(),
+                AccountNumber = id
             });
     }
 
-    [HttpPost]
-    public async Task<IActionResult> BillPay(int id, BillPayViewModel model)
+    public async Task<IActionResult> CancelBillPay(int id)
     {
+        var billPay = await _context.BillPays.FindAsync(id);
+        var account = billPay.Account;
+        _context.Remove(billPay);
+        await _context.SaveChangesAsync();
+        return View("BillPay", account);
+    }
+
+    public async Task<IActionResult> UpdateBillPay(int id)
+    {
+        var billPay = await _context.BillPays.FindAsync(id);
+
+        return View("CreateBillPay", new BillPayViewModel
+        {
+            Payees = await _context.Payees.ToListAsync(),
+            BillPay = billPay,
+            AccountNumber = billPay.AccountNumber,
+            Action = "Update"
+        });
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateBillPay(BillPayViewModel model)
+    {
+        var billPay = model.BillPay;
+        ScheduleTimeValidation(billPay.ScheduleTimeUtc);
         if (!ModelState.IsValid)
         {
             return View(new BillPayViewModel
             {
                 Payees = await _context.Payees.ToListAsync(),
-                BillPay = model.BillPay
+                BillPay = billPay,
+                AccountNumber = billPay.AccountNumber
             });
         }
 
-        BillPay billPay = model.BillPay;
-        billPay.AccountNumber = id;
+        billPay.ScheduleTimeUtc = billPay.ScheduleTimeUtc.ToUniversalTime();
         _context.Add(billPay);
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(BillPay), new { id = billPay.AccountNumber });
+    }
+
+    public async Task<IActionResult> BillPay(int id)
+    {
+        var account = await _context.Accounts.FindAsync(id);
+        return View(account);
     }
 
     private void AmountErrorMessage(decimal amount)
@@ -214,9 +242,15 @@ public class AccountController : Controller
             ModelState.AddModelError("Transaction.Amount", "Amount cannot have more than 2 decimal places.");
     }
 
-    public void WithdrawAmountValidation(decimal amount, Account account)
+    private void WithdrawAmountValidation(decimal amount, Account account)
     {
         if (account.InsufficientAmount(amount))
             ModelState.AddModelError("Transaction.Amount", "Insufficient balance");
+    }
+
+    private void ScheduleTimeValidation(DateTime time)
+    {
+        if (time <= DateTime.Now)
+            ModelState.AddModelError("BillPay.ScheduleTimeUtc", "Please schedule a future payment");
     }
 }

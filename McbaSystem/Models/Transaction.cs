@@ -8,7 +8,8 @@ public enum TransactionType
     Deposit = 'D',
     Withdraw = 'W',
     Transfer = 'T',
-    ServiceCharge = 'S'
+    ServiceCharge = 'S',
+    BillPay = 'B'
 }
 
 public class Transaction

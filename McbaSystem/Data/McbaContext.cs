@@ -46,8 +46,6 @@ public class McbaContext : DbContext
         {
             entity.Property(e => e.Period)
                 .HasConversion(period => (char)period, period => (BillPayPeriod)period);
-            entity.Property(e => e.Status)
-                .HasConversion(status => (char)status, status => (BillPayStatus)status);
         });
         // Configure ambiguous Account.BillPays navigation property relationship.
         builder.Entity<BillPay>().HasOne(billPay => billPay.Account)

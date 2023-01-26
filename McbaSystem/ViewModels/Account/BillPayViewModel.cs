@@ -6,4 +6,6 @@ public class BillPayViewModel
 {
     public BillPay BillPay { get; set; }
     public List<Payee> Payees { get; set; }
+    public int AccountNumber { get; set; }
+    public string Action { get; set; } = "Create";
 }

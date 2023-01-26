@@ -1,0 +1,60 @@
+﻿@model McbaSystem.ViewModels.Account.BillPayViewModel
+@{
+    ViewData["Title"] = $"{Model.Action} BillPay";
+}
+
+<h1 class="display-4">@Model.Action BillPay</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateBillPay">
+            <input type="hidden" name="BillPay.AccountNumber" value="@Model.AccountNumber"/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BillPay.PayeeID" class="control-label"></label>
+                <select name="BillPay.PayeeID" id="BillPay.PayeeID" class="form-control">
+                    <option value="">- Please select Payee -</option>
+                    @foreach (var payee in Model.Payees)
+                    {
+                        <option value="@payee.PayeeID" selected="@(payee.PayeeID.Equals(Model.BillPay.PayeeID))">@payee.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="BillPay.PayeeID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BillPay.Amount" class="control-label"></label>
+                <input asp-for="BillPay.Amount" class="form-control"/>
+                <span asp-validation-for="BillPay.Amount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BillPay.ScheduleTimeUtc" class="control-label"></label>
+                <input asp-for="BillPay.ScheduleTimeUtc" class="form-control" placeholder="XXX XXX XXX"/>
+                <span asp-validation-for="BillPay.ScheduleTimeUtc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BillPay.Period" class="control-label"></label>
+                <select name="BillPay.Period" id="BillPay.Period" class="form-control">
+                    <option value="">- Please select Period -</option>
+                    @foreach (var period in Enum.GetValues(typeof(BillPayPeriod)))
+                    {
+                        <option value="@period" selected="@(period.ToString().Equals(Model.BillPay.Period))">@period.ToString()</option>
+                    }
+                </select>
+                <span asp-validation-for="BillPay.Period" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@Model.Action" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="BillPay" asp-route-id="@Model.AccountNumber">Back to Scheduled Payments</a>
+    <br/>
+    <a asp-action="Index" asp-route-id="@Model.AccountNumber" asp-route-link="BillPay">Back to Accounts</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
