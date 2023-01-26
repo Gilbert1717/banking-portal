@@ -1,6 +1,7 @@
 ﻿using McbaSystem.Data;
 using McbaSystem.Filters;
 using McbaSystem.Models;
+using McbaSystem.Services;
 using McbaSystem.Utilities;
 using McbaSystem.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,12 @@ public class AccountController : Controller
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    private readonly MenuService _menuService;
+    private readonly AccountService _accountService;
 
     public AccountController(McbaContext context)
     {
         _context = context;
-        _menuService = new MenuService(context);
+        _accountService = new AccountService(context);
     }
 
     public async Task<IActionResult> Index(string link)
@@ -66,11 +67,11 @@ public class AccountController : Controller
         Account account = await _context.Accounts.Include(x => x.Transactions)
             .Where(x => x.AccountNumber == transaction.AccountNumber).FirstOrDefaultAsync<Account>();
 
-        _menuService.HandleTransaction(transaction, account);
+        _accountService.HandleTransaction(transaction, account);
         switch (transaction.TransactionType)
         {
             case TransactionType.Withdraw:
-                _menuService.WithdrawServiceFeeCharge(account);
+                _accountService.WithdrawServiceFeeCharge(account);
                 break;
             case TransactionType.Transfer:
                 var destinationAccountNumber = (int)transaction.DestinationAccountNumber;
@@ -83,8 +84,8 @@ public class AccountController : Controller
                     TransactionTimeUtc = DateTime.Now.ToUniversalTime()
                 };
                 var destinationAccount = await _context.Accounts.FindAsync(destinationAccountNumber);
-                _menuService.HandleTransaction(incomingTransaction, destinationAccount);
-                _menuService.TransferServiceFeeCharge(account);
+                _accountService.HandleTransaction(incomingTransaction, destinationAccount);
+                _accountService.TransferServiceFeeCharge(account);
                 break;
         }
 
@@ -150,24 +151,15 @@ public class AccountController : Controller
 
     private void DestinationAccountNumberValidation(int? id, Account account)
     {
+        var key = "Transaction.DestinationAccountNumber";
         if (id == null)
-        {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber",
-                "Destination account number cannot be empty");
-        }
+            ModelState.AddModelError(key, "Destination account number cannot be empty");
+
         else if (id == account.AccountNumber)
-        {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber",
-                "Unable to transfer money to the same account");
-        }
-        else
-        {
-            var destinationAccount = _context.Accounts.Find(id);
-            if (destinationAccount == null)
-            {
-                ModelState.AddModelError("Transaction.DestinationAccountNumber", "The account number does not exist");
-            }
-        }
+            ModelState.AddModelError(key, "Unable to transfer money to the same account");
+
+        else if (_context.Accounts.Find(id) == null)
+            ModelState.AddModelError(key, "The account number does not exist");
     }
 
     private void AmountErrorMessage(decimal amount)
