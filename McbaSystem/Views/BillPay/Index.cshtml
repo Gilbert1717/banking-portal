@@ -6,10 +6,12 @@
 <div>
     <h1 class="display-4">Welcome, @Model.Customer.Name</h1>
 
-    <h3>Your Scheduled Payments - @Model.BillPays[0].AccountNumber (@Model.BillPays[0].Account.AccountType)</h3>
+    <h3>Your Scheduled Payments - @Model.AccountNumber (@Model.AccountType)</h3>
     @if (Model.BillPays.Count == 0)
     {
+        <hr/>
         <p>No schduled payment</p>
+        <hr/>
     }
     else
     {

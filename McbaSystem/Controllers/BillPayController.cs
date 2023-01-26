@@ -1,6 +1,7 @@
 ﻿using McbaSystem.Data;
 using McbaSystem.Filters;
 using McbaSystem.Models;
+using McbaSystem.Utilities;
 using McbaSystem.ViewModels.BillPay;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,7 @@ public class BillPayController : Controller
     {
         var billPay = model.BillPay;
         ScheduleTimeValidation(billPay.ScheduleTimeUtc);
+        AmountValidation(billPay.Amount);
         if (!ModelState.IsValid)
         {
             return View("Form",
@@ -87,6 +89,7 @@ public class BillPayController : Controller
     {
         var billPay = model.BillPay;
         ScheduleTimeValidation(billPay.ScheduleTimeUtc);
+        AmountValidation(billPay.Amount);
         if (!ModelState.IsValid)
         {
             return View("Form",
@@ -110,5 +113,14 @@ public class BillPayController : Controller
     {
         if (time <= DateTime.Now)
             ModelState.AddModelError("BillPay.ScheduleTimeUtc", "Please schedule a future payment");
+    }
+
+    private void AmountValidation(decimal amount)
+    {
+        if (amount <= 0)
+            ModelState.AddModelError("BillPay.Amount", "Amount must be positive.");
+
+        if (amount.HasMoreThanTwoDecimalPlaces())
+            ModelState.AddModelError("BillPay.Amount", "Amount cannot have more than 2 decimal places.");
     }
 }

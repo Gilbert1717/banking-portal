@@ -37,8 +37,11 @@ public class ScheduledBillPay : BackgroundService
         var now = DateTime.Now.ToUniversalTime();
         AccountService accountService = new AccountService(context);
         var billPays = await context.BillPays
-            .Where(pay => pay.ScheduleTimeUtc < now && pay.ErrorMessage == null)
+            .Where(pay => pay.ScheduleTimeUtc <= now && pay.ErrorMessage == null)
             .ToListAsync(cancellationToken);
+        
+        _logger.LogInformation($"Processing {billPays.Count} scheduled payment(s).");
+
         foreach (var billPay in billPays)
         {
             accountService.BillPayExecute(billPay);
