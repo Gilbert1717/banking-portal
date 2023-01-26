@@ -4,6 +4,7 @@ using McbaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace McbaSystem.Migrations
 {
     [DbContext(typeof(McbaContext))]
-    partial class McbaContextModelSnapshot : ModelSnapshot
+    [Migration("20230124101949_addBillPayAndPayee")]
+    partial class addBillPayAndPayee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -63,13 +66,11 @@ namespace McbaSystem.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("money");
 
-                    b.Property<string>("ErrorMessage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PayeeID")
                         .HasColumnType("int");
 
-                    b.Property<char>("Period")
+                    b.Property<string>("Period")
+                        .IsRequired()
                         .HasColumnType("char");
 
                     b.Property<DateTime>("ScheduleTimeUtc")
@@ -81,10 +82,7 @@ namespace McbaSystem.Migrations
 
                     b.HasIndex("PayeeID");
 
-                    b.ToTable("BillPays", t =>
-                        {
-                            t.HasCheckConstraint("CH_BillPay_Amount", "Amount > 0");
-                        });
+                    b.ToTable("BillPays");
                 });
 
             modelBuilder.Entity("McbaSystem.Models.Customer", b =>
@@ -220,7 +218,8 @@ namespace McbaSystem.Migrations
                     b.Property<DateTime>("TransactionTimeUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<char>("TransactionType")
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
                         .HasColumnType("char");
 
                     b.HasKey("TransactionID");
@@ -249,7 +248,7 @@ namespace McbaSystem.Migrations
             modelBuilder.Entity("McbaSystem.Models.BillPay", b =>
                 {
                     b.HasOne("McbaSystem.Models.Account", "Account")
-                        .WithMany("BillPays")
+                        .WithMany()
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -295,8 +294,6 @@ namespace McbaSystem.Migrations
 
             modelBuilder.Entity("McbaSystem.Models.Account", b =>
                 {
-                    b.Navigation("BillPays");
-
                     b.Navigation("Transactions");
                 });
 

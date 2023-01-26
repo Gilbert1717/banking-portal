@@ -14,7 +14,6 @@ public class AccountController : Controller
 {
     private readonly McbaContext _context;
 
-
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
     private readonly MenuService _menuService;
@@ -25,9 +24,6 @@ public class AccountController : Controller
         _menuService = new MenuService(context);
     }
 
-    /**
-     * Default to land on Deposit page if link is not provided.
-     */
     public async Task<IActionResult> Index(string link)
     {
         return View(
@@ -69,17 +65,16 @@ public class AccountController : Controller
     {
         Account account = await _context.Accounts.Include(x => x.Transactions)
             .Where(x => x.AccountNumber == transaction.AccountNumber).FirstOrDefaultAsync<Account>();
-        // FindAsync(transaction.AccountNumber);
+
         _menuService.HandleTransaction(transaction, account);
         switch (transaction.TransactionType)
         {
             case TransactionType.Withdraw:
-                List<Transaction> transactions = account.Transactions;
                 _menuService.WithdrawServiceFeeCharge(account);
                 break;
             case TransactionType.Transfer:
                 var destinationAccountNumber = (int)transaction.DestinationAccountNumber;
-                Transaction incomingTransaction = new Transaction()
+                Transaction incomingTransaction = new Transaction
                 {
                     TransactionType = TransactionType.Transfer,
                     Comment = transaction.Comment,
@@ -157,12 +152,13 @@ public class AccountController : Controller
     {
         if (id == null)
         {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Destination account number cannot be empty");
+            ModelState.AddModelError("Transaction.DestinationAccountNumber",
+                "Destination account number cannot be empty");
         }
-
         else if (id == account.AccountNumber)
         {
-            ModelState.AddModelError("Transaction.DestinationAccountNumber", "Unable to transfer money to the same account");
+            ModelState.AddModelError("Transaction.DestinationAccountNumber",
+                "Unable to transfer money to the same account");
         }
         else
         {
@@ -174,26 +170,6 @@ public class AccountController : Controller
         }
     }
 
-    //Todo: ScheduledBill
-    [HttpPost]
-    // public async Task<IActionResult> BillPay(int id, AccountPageViewModel model)
-    // {
-    //     var account = await _context.Accounts.FindAsync(id);
-    //     AmountErrorMessage(model.Transaction.Amount);
-    //     WithdrawAmountValidation(model.Transaction.Amount, account);
-    //     if (!ModelState.IsValid)
-    //     {
-    //         ViewBag.Amount = model.Transaction.Amount;
-    //         ViewBag.Comment = model.Transaction.Comment;
-    //         return View("Deposit", model);
-    //     }
-    //
-    //     _menuService.HandleTransaction(TransactionType.Withdraw, model.Transaction.Comment,
-    //         model.Transaction.Amount * -1, account);
-    //     _menuService.WithdrawServiceFeeCharge(account);
-    //     await _context.SaveChangesAsync();
-    //     return RedirectToAction(nameof(Index));
-    // }
     private void AmountErrorMessage(decimal amount)
     {
         if (amount <= 0)
@@ -203,7 +179,7 @@ public class AccountController : Controller
             ModelState.AddModelError("Transaction.Amount", "Amount cannot have more than 2 decimal places.");
     }
 
-    public void WithdrawAmountValidation(decimal amount, Account account)
+    private void WithdrawAmountValidation(decimal amount, Account account)
     {
         if (account.InsufficientAmount(amount))
             ModelState.AddModelError("Transaction.Amount", "Insufficient balance");

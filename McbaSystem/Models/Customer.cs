@@ -19,7 +19,7 @@ public class Customer
     [StringLength(40)]
     public string City { get; set; }
 
-    [StringLength(3)]
+    [StringLength(3, MinimumLength = 2)]
     public string State { get; set; }
 
     [StringLength(4, MinimumLength = 4, ErrorMessage = "Invalid postcode")]

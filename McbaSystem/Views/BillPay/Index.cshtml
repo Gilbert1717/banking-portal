@@ -1,0 +1,60 @@
+﻿@model Account
+@{
+    ViewData["Title"] = "BillPay";
+}
+
+<div>
+    <h1 class="display-4">Welcome, @Model.Customer.Name</h1>
+
+    <h3>Your Scheduled Payments - @Model.BillPays[0].AccountNumber (@Model.BillPays[0].Account.AccountType)</h3>
+    @if (Model.BillPays.Count == 0)
+    {
+        <p>No schduled payment</p>
+    }
+    else
+    {
+        <table class="table">
+            <tr>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Payee)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Amount)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].ScheduleTimeUtc)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].Period)</th>
+                <th>@Html.DisplayNameFor(x => Model.BillPays[0].ErrorMessage)</th>
+                <th></th>
+            </tr>
+            @foreach (var billPay in Model.BillPays.OrderBy(pay => pay.ScheduleTimeUtc))
+            {
+                <tr class="@(billPay.ErrorMessage != null ? "table-danger" : "")">
+                    <td>@Html.DisplayFor(x => billPay.Payee.Name)</td>
+                    <td>@Html.DisplayFor(x => billPay.Amount)</td>
+                    <td>@billPay.ScheduleTimeUtc.ToLocalTime()</td>
+                    <td>@Html.DisplayFor(x => billPay.Period)</td>
+                    <td>@Html.DisplayFor(x => billPay.ErrorMessage)</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary"
+                           asp-action="Cancel" asp-route-id="@billPay.BillPayID">
+                            Cancel
+                        </a>
+                        @if (billPay.ErrorMessage != null)
+                        {
+                            <a class="btn btn-sm btn-primary"
+                               asp-action="Update" asp-route-id="@billPay.BillPayID">
+                                Update
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+</div>
+
+<div>
+    <a asp-action="Create" asp-route-id="@Model.AccountNumber" class="btn btn-primary">Create BillPay</a>
+    <br/>
+    <a asp-action="Index" asp-controller="Account" asp-route-link="BillPay">Back to Accounts</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

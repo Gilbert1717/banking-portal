@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace McbaSystem.Models;
@@ -9,13 +8,15 @@ public enum TransactionType
     Deposit = 'D',
     Withdraw = 'W',
     Transfer = 'T',
-    ServiceCharge = 'S'
+    ServiceCharge = 'S',
+    BillPay = 'B'
 }
 
 public class Transaction
 {
     public int TransactionID { get; set; }
 
+    [Required, Column(TypeName = "char")]
     public TransactionType TransactionType { get; set; }
 
     [ForeignKey("Account")]
@@ -25,7 +26,7 @@ public class Transaction
     [ForeignKey("DestinationAccount")]
     public int? DestinationAccountNumber { get; set; }
     public virtual Account DestinationAccount { get; set; }
-    
+
     [Column(TypeName = "money")]
     public decimal Amount { get; set; }
 

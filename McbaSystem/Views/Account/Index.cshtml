@@ -20,10 +20,19 @@
                 <td>@Html.DisplayFor(x => account.AccountNumber)</td>
                 <td>@Html.DisplayFor(x => account.AccountType)</td>
                 <td>@Html.DisplayFor(x => account.Balance)</td>
-                @if (Model.Action != null)
+                @if (Model.Action == "BillPay")
                 {
                     <td>
-                        <a class="btn btn-primary"
+                        <a class="btn btn-sm btn-primary"
+                           asp-action="Index" asp-controller="BillPay" asp-route-id="@account.AccountNumber">
+                            @Model.Action
+                        </a>
+                    </td>
+                }
+                else if (Model.Action != null)
+                {
+                    <td>
+                        <a class="btn btn-sm btn-primary"
                            asp-action="@Model.Action" asp-route-id="@account.AccountNumber">
                             @Model.Action
                         </a>

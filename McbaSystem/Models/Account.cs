@@ -28,4 +28,8 @@ public class Account
     // Set ambiguous navigation property with InverseProperty annotation or Fluent-API in the McbaContext.cs file.
     [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; set; }
+
+    // Set ambiguous navigation property with InverseProperty annotation or Fluent-API in the McbaContext.cs file.
+    [InverseProperty("Account")]
+    public virtual List<BillPay> BillPays { get; set; }
 }
