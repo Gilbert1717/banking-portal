@@ -2,13 +2,15 @@ using McbaSystem.Data;
 using McbaSystem.Models;
 using McbaSystem.Utilities;
 
-public class MenuService
+namespace McbaSystem.Services;
+
+public class AccountService
 {
     private const decimal AtmWithdraw = -0.05m;
     private const decimal AccountTransfer = -0.1m;
-    
+
     private readonly McbaContext _context;
-    public MenuService(McbaContext context) => _context = context;
+    public AccountService(McbaContext context) => _context = context;
 
     public void HandleTransaction(Transaction transaction, Account account)
     {
@@ -21,7 +23,7 @@ public class MenuService
     {
         if (TransactionFeeValidation(account.Transactions))
         {
-            Transaction transaction = new Transaction()
+            Transaction transaction = new Transaction
             {
                 TransactionType = TransactionType.ServiceCharge,
                 Comment = "Withdrawal fee",
@@ -37,7 +39,7 @@ public class MenuService
     {
         if (TransactionFeeValidation(account.Transactions))
         {
-            Transaction transaction = new Transaction()
+            Transaction transaction = new Transaction
             {
                 TransactionType = TransactionType.ServiceCharge,
                 Comment = "Account transfer fee",
@@ -84,7 +86,7 @@ public class MenuService
                 Amount = billPay.Amount * -1,
                 TransactionTimeUtc = DateTime.UtcNow
             };
-            
+
             HandleTransaction(transaction, billPay.Account);
             if (billPay.Period == BillPayPeriod.Monthly)
             {
