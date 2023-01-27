@@ -6,6 +6,7 @@ using McbaSystem.Utilities;
 using McbaSystem.ViewModels.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace McbaSystem.Controllers;
 
@@ -147,6 +148,17 @@ public class AccountController : Controller
 
         model.Transaction.Amount *= -1;
         return View("Confirm", model);
+    }
+
+    public async Task<IActionResult> Statement(int id, int? page = 1)
+    {
+        const int pageSize = 4;
+        return View(
+            await _context.Transactions
+                .Where(x => x.AccountNumber == id)
+                .OrderByDescending(x => x.TransactionTimeUtc)
+                .ToPagedListAsync(page, pageSize)
+        );
     }
 
     private void DestinationAccountNumberValidation(int? id, Account account)

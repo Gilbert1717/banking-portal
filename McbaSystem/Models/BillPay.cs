@@ -31,5 +31,6 @@ public class BillPay
     [Required, Column(TypeName = "char")]
     public BillPayPeriod Period { get; set; }
 
+    [Display(Name = "Error")]
 	public string ErrorMessage { get; set; }
 }
