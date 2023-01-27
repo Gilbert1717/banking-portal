@@ -29,7 +29,7 @@
                 <tr class="@(billPay.ErrorMessage != null ? "table-danger" : "")">
                     <td>@Html.DisplayFor(x => billPay.Payee.Name)</td>
                     <td>@Html.DisplayFor(x => billPay.Amount)</td>
-                    <td>@billPay.ScheduleTimeUtc.ToLocalTime()</td>
+                    <td>@billPay.ScheduleTimeUtc.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
                     <td>@Html.DisplayFor(x => billPay.Period)</td>
                     <td>@Html.DisplayFor(x => billPay.ErrorMessage)</td>
                     <td>
