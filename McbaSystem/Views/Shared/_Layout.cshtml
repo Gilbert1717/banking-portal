@@ -29,6 +29,10 @@
                             </span>
                         </li>
                         <li class="nav-item">
+                            <img alt="profile picture" style="max-height:40px;max-width:40px" 
+                                 src="@(Context.Session.GetInt32(nameof(Customer.ProfilePicture)).HasValue ? "data:image/jpg;base64," + Context.Session.GetString(nameof(Customer.ProfilePicture)) : "/img/default-profile-pic.jpg")"/>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Logout">Logout</a>
                         </li>
                     }

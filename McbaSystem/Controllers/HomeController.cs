@@ -37,6 +37,11 @@ public class HomeController : Controller
         // Login customer.
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
         HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
+        if (login.Customer.ProfilePicture != null)
+        {
+            HttpContext.Session.SetString(nameof(Customer.ProfilePicture),
+                Convert.ToBase64String(login.Customer.ProfilePicture.Image));
+        }
 
         return RedirectToAction(nameof(Index));
     }

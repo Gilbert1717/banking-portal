@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ImageMagick;
 using McbaSystem.Data;
 using McbaSystem.Filters;
 using McbaSystem.Models;
@@ -73,6 +74,55 @@ public class ProfileController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public async Task<IActionResult> UpdateProfilePicture()
+    {
+        return View(await _context.Customers.FindAsync(CustomerID));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfilePicture(IFormFile file)
+    {
+        Customer customer = await _context.Customers.FindAsync(CustomerID);
+
+        FileValidation(file);
+        if (!ModelState.IsValid)
+        {
+            return View(customer);
+        }
+
+        byte[] imageInBytes = await ConvertImageToBytes(file);
+        if (customer.ProfilePicture != null)
+        {
+            customer.ProfilePicture.Image = imageInBytes;
+            _context.Update(customer.ProfilePicture);
+        }
+        else
+        {
+            _context.Add(new ProfilePicture
+            {
+                Image = imageInBytes,
+                CustomerID = CustomerID
+            });
+        }
+
+        HttpContext.Session.SetString(nameof(Customer.ProfilePicture), Convert.ToBase64String(imageInBytes));
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> DeleteProfilePicture()
+    {
+        var customer = await _context.Customers.FindAsync(CustomerID);
+        _context.Remove(customer.ProfilePicture);
+        await _context.SaveChangesAsync();
+
+        HttpContext.Session.Remove(nameof(Customer.ProfilePicture));
+
+        return RedirectToAction(nameof(Index));
+    }
+
     private void EditProfileValidation(Customer customer)
     {
         if (customer.PostCode != null && !Regex.IsMatch(customer.PostCode, @"[0-9]{4}"))
@@ -102,5 +152,42 @@ public class ProfileController : Controller
         {
             ModelState.AddModelError(nameof(model.OldPassword), "Incorrect old password");
         }
+    }
+
+    private void FileValidation(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            ModelState.AddModelError(nameof(Customer.ProfilePicture), "Please choose a file before upload");
+        }
+    }
+
+    private async Task<byte[]> ConvertImageToBytes(IFormFile file)
+    {
+        // Set the image location under WWWRoot folder. 
+        var path = Path.Combine("wwwroot", "temp", file.FileName);
+        // Saving the image in that folder 
+        await using (FileStream stream = new FileStream(path, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+            stream.Close();
+        }
+
+        // Read image from file 
+        byte[] data;
+        using (var image = new MagickImage(path))
+        {
+            // Sets the output format to jpeg
+            image.Format = MagickFormat.Jpeg;
+
+            var size = new MagickGeometry(400, 400);
+            image.Resize(size);
+
+            data = image.ToByteArray();
+        }
+
+        // Clean up file in WWWRoot
+        System.IO.File.Delete(path);
+        return data;
     }
 }
