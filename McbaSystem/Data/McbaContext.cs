@@ -15,6 +15,7 @@ public class McbaContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<BillPay> BillPays { get; set; }
     public DbSet<Payee> Payees { get; set; }
+    public DbSet<ProfilePicture> ProfilePictures { get; set; }
 
     // Fluent-API.
     protected override void OnModelCreating(ModelBuilder builder)
@@ -51,5 +52,6 @@ public class McbaContext : DbContext
         builder.Entity<BillPay>().HasOne(billPay => billPay.Account)
             .WithMany(account => account.BillPays)
             .HasForeignKey(billPay => billPay.AccountNumber);
+        
     }
 }

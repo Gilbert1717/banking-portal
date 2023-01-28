@@ -7,53 +7,76 @@
 
 <div>
     <hr/>
-    <dl class="row">
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.Name)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.Name ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.TFN)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.TFN ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.Address)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.Address ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.City)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.City ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.State)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.State ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.PostCode)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.PostCode ?? "-")
-        </dd>
-        <dt class="col-sm-1 text-right">
-            @Html.DisplayNameFor(customer => customer.Mobile)
-        </dt>
-        <dd class="col-sm-11">
-            @(Model.Mobile ?? "-")
-        </dd>
-    </dl>
+    <div class="row">
+        <div class="col-sm-6">
+            <dl class="row">
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.Name)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.Name ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.TFN)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.TFN ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.Address)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.Address ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.City)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.City ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.State)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.State ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.PostCode)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.PostCode ?? "-")
+                </dd>
+                <dt class="col-sm-2 text-right">
+                    @Html.DisplayNameFor(customer => customer.Mobile)
+                </dt>
+                <dd class="col-sm-10">
+                    @(Model.Mobile ?? "-")
+                </dd>
+            </dl>
+        </div>
+        <div class="col-sm-6 text-center">
+            @if (true)
+            {
+                <img src="~/img/default-profile-pic.jpg" alt="default profile picture"/>
+            }
+            else
+            {
+            }
+
+        </div>
+    </div>
 </div>
 
-<div>
-    <a asp-action="EditProfile" class="btn btn-primary">Update Profile</a>
-    <a asp-action="UpdatePassword" class="btn btn-primary">Change Password</a>
+<div class="row">
+    <div class="col-sm-6">
+        <a asp-action="EditProfile" class="btn btn-primary">Update Profile</a>
+        <a asp-action="UpdatePassword" class="btn btn-primary">Change Password</a>
+    </div>
+    <div class="col-sm-6 text-center">
+        <a asp-action="UpdateProfilePicture" class="btn btn-primary">Update</a>
+        @if (false)
+        {
+            @* <a asp-action="DeleteProfilePicture" class="btn btn-primary">Delete</a> *@
+        }
+    </div>
 </div>

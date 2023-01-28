@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Net.Mime;
+using System.Text.RegularExpressions;
+using ImageMagick;
 using McbaSystem.Data;
 using McbaSystem.Filters;
 using McbaSystem.Models;
@@ -56,6 +58,7 @@ public class ProfileController : Controller
         );
     }
 
+
     [HttpPost]
     public async Task<IActionResult> UpdatePassword(UpdatePasswordViewModel model)
     {
@@ -73,6 +76,40 @@ public class ProfileController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    public async Task<IActionResult> UpdateProfilePicture()
+    {
+        Customer customer = await _context.Customers.FindAsync(CustomerID);
+        // Read image from file
+        // using (var image = new MagickImage(path))
+        // {
+        //     // Sets the output format to jpeg
+        //     image.Format = MagickFormat.Jpeg;
+        //
+        //     // Sets the output size
+        //     var settings = new MagickReadSettings();
+        //     settings.Width = 800;
+        //     settings.Height = 600;
+        //
+        //
+        //     byte[] data = image.ToByteArray();
+        // }
+        //
+        // Customer customer = await _context.Customers.FindAsync(CustomerID);
+        return View(customer);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateProfilePicture(string path, Customer customer)
+    {
+        // Customer customer = await _context.Customers.FindAsync(CustomerID);
+
+
+        using (var image = new MagickImage(path)) 
+            // customer.Image = image.ToByteArray();
+        _context.Update(customer);
+        _context.SaveChangesAsync();
+        return View(customer);
+    }
     private void EditProfileValidation(Customer customer)
     {
         if (customer.PostCode != null && !Regex.IsMatch(customer.PostCode, @"[0-9]{4}"))
