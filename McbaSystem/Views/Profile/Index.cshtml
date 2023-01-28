@@ -10,73 +10,80 @@
     <div class="row">
         <div class="col-sm-6">
             <dl class="row">
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.Name)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.Name ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.TFN)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.TFN ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.Address)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.Address ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.City)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.City ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.State)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.State ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.PostCode)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.PostCode ?? "-")
                 </dd>
-                <dt class="col-sm-2 text-right">
+                <dt class="col-sm-3 text-right">
                     @Html.DisplayNameFor(customer => customer.Mobile)
                 </dt>
-                <dd class="col-sm-10">
+                <dd class="col-sm-9">
                     @(Model.Mobile ?? "-")
                 </dd>
             </dl>
+
+            <a asp-action="EditProfile" class="btn btn-primary">Update Profile</a>
+            <a asp-action="UpdatePassword" class="btn btn-primary">Change Password</a>
         </div>
         <div class="col-sm-6 text-center">
-            @if (true)
+            @if (Model.ProfilePicture == null)
             {
-                <img src="~/img/default-profile-pic.jpg" alt="default profile picture"/>
+                <img src="/img/default-profile-pic.jpg" alt="default profile picture" height="400"/>
             }
             else
             {
+                <img src="data:image/jpg;base64,@Convert.ToBase64String(Model.ProfilePicture.Image)" alt="customer profile picture"/>
             }
-
+            <div>
+                <label>
+                    <b>Profile Picture</b>
+                </label>
+            </div>
+            <div>
+                <a asp-action="UpdateProfilePicture" class="btn btn-primary">Update</a>
+                @if (Model.ProfilePicture != null)
+                {
+                    <a asp-action="DeleteProfilePicture" class="btn btn-danger">Delete</a>
+                }
+            </div>
         </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-sm-6">
-        <a asp-action="EditProfile" class="btn btn-primary">Update Profile</a>
-        <a asp-action="UpdatePassword" class="btn btn-primary">Change Password</a>
     </div>
-    <div class="col-sm-6 text-center">
-        <a asp-action="UpdateProfilePicture" class="btn btn-primary">Update</a>
-        @if (false)
-        {
-            @* <a asp-action="DeleteProfilePicture" class="btn btn-primary">Delete</a> *@
-        }
-    </div>
+
 </div>
