@@ -33,6 +33,12 @@ public class HomeController : Controller
             ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
             return View("Index", new Login { LoginID = loginID });
         }
+        
+        if (login.isLocked)
+        {
+            ModelState.AddModelError("LoginFailed", "Account is locked, please contact admin.");
+            return View("Index", new Login { LoginID = loginID });
+        }
 
         // Login customer.
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);

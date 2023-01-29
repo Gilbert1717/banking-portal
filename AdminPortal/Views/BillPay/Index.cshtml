@@ -29,7 +29,7 @@
                 <td>@Html.DisplayFor(x => payment.Amount)</td>
                 <td>@Html.DisplayFor(x => payment.ScheduleTimeUtc)</td>
                 <td>@Html.DisplayFor(x => payment.Period)</td>
-                <td>@Html.DisplayFor(x => payment.ErrorMessage)</td>
+                <td class="text-danger">@Html.DisplayFor(x => payment.ErrorMessage)</td>
                 <td>
                     <a class="btn @btnClass" asp-action="@action" asp-route-id="@payment.BillPayID">@action</a>
                 </td>

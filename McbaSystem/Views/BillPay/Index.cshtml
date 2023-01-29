@@ -1,6 +1,7 @@
 ﻿@model Account
 @{
     ViewData["Title"] = "BillPay";
+    var hasBlockedPayment = false;
 }
 
 <div>
@@ -17,6 +18,7 @@
     {
         <table class="table">
             <tr>
+                <th></th>
                 <th>@Html.DisplayNameFor(x => Model.BillPays[0].Payee)</th>
                 <th>@Html.DisplayNameFor(x => Model.BillPays[0].Amount)</th>
                 <th>@Html.DisplayNameFor(x => Model.BillPays[0].ScheduleTimeUtc)</th>
@@ -26,18 +28,25 @@
             </tr>
             @foreach (var billPay in Model.BillPays.OrderBy(pay => pay.ScheduleTimeUtc))
             {
-                <tr class="@(billPay.ErrorMessage != null ? "table-danger" : "")">
+                <tr class="@(billPay.isBlocked ? "table-danger" : "")">
+                    <td>
+                        @if (billPay.isBlocked)
+                        {
+                            hasBlockedPayment = true;
+                            <span class="badge badge-pill badge-secondary">Blocked</span>
+                        }
+                    </td>
                     <td>@Html.DisplayFor(x => billPay.Payee.Name)</td>
                     <td>@Html.DisplayFor(x => billPay.Amount)</td>
                     <td>@billPay.ScheduleTimeUtc.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")</td>
                     <td>@Html.DisplayFor(x => billPay.Period)</td>
-                    <td>@Html.DisplayFor(x => billPay.ErrorMessage)</td>
+                    <td class="text-danger">@Html.DisplayFor(x => billPay.ErrorMessage)</td>
                     <td>
                         <a class="btn btn-sm btn-primary"
                            asp-action="Cancel" asp-route-id="@billPay.BillPayID">
                             Cancel
                         </a>
-                        @if (billPay.ErrorMessage != null)
+                        @if (billPay.ErrorMessage != null && !billPay.isBlocked)
                         {
                             <a class="btn btn-sm btn-primary"
                                asp-action="Update" asp-route-id="@billPay.BillPayID">
@@ -50,6 +59,16 @@
         </table>
     }
 </div>
+
+@if (hasBlockedPayment)
+{
+    <div>
+        <p>
+            <span class="badge badge-pill badge-secondary">Blocked</span>
+            BillPay is blocked - Please contact admin.
+        </p>
+    </div>
+}
 
 <div>
     <a asp-action="Create" asp-route-id="@Model.AccountNumber" class="btn btn-primary">Create BillPay</a>
