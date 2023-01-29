@@ -10,3 +10,7 @@ MCBA (Most Common Bank of Australia)
 - `McbaSystem` adapted from Day6 `McbaExampleWithLogin`
 - `Api` adapted from Day9-Lectorial `WebApi`
 - `AdminPortal` adapted from Day9-Lectorial `MvcMovie`
+
+### Assumptions
+
+- `McbaSystem` is always run first to fetch data from server and seed data
