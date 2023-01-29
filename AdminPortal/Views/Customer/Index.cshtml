@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminPortal.ViewModels.Home.IndexViewModel
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div>
+    <h1 class="display-4">MCBA Customers</h1>
+
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].CustomerID)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Name)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].TFN)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Address)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].City)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].State)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].PostCode)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Mobile)</th>
+            <th></th>
+        </tr>
+        @foreach (var customer in Model.Customers)
+        {
+            <tr>
+                <td>@Html.DisplayFor(x => customer.CustomerID)</td>
+                <td>@Html.DisplayFor(x => customer.Name)</td>
+                <td>@Html.DisplayFor(x => customer.TFN)</td>
+                <td>@Html.DisplayFor(x => customer.Address)</td>
+                <td>@Html.DisplayFor(x => customer.City)</td>
+                <td>@Html.DisplayFor(x => customer.State)</td>
+                <td>@Html.DisplayFor(x => customer.PostCode)</td>
+                <td>@Html.DisplayFor(x => customer.Mobile)</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Update" asp-route-id="@customer.CustomerID">Update</a>
+                    @{ var login = Model.Logins.First(x => x.CustomerID == customer.CustomerID); }
+                    @if (login.isLocked)
+                    {
+                        <a class="btn btn-success" asp-action="Unlock" asp-route-id="@login.LoginID">Unlock</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger" asp-action="Lock" asp-route-id="@login.LoginID">Lock</a>
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</div>
