@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace McbaSystem.Models;
+namespace Api.Models;
 
 public class Login
 {

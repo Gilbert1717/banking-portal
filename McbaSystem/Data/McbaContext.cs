@@ -52,6 +52,5 @@ public class McbaContext : DbContext
         builder.Entity<BillPay>().HasOne(billPay => billPay.Account)
             .WithMany(account => account.BillPays)
             .HasForeignKey(billPay => billPay.AccountNumber);
-        
     }
 }
