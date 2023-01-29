@@ -1,0 +1,39 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<BillPay>
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div>
+    <h1 class="display-4">MCBA Scheduled Payments</h1>
+
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(x => x[0].BillPayID)</th>
+            <th>@Html.DisplayNameFor(x => x[0].AccountNumber)</th>
+            <th>@Html.DisplayNameFor(x => x[0].PayeeID)</th>
+            <th>@Html.DisplayNameFor(x => x[0].Amount)</th>
+            <th>@Html.DisplayNameFor(x => x[0].ScheduleTimeUtc)</th>
+            <th>@Html.DisplayNameFor(x => x[0].Period)</th>
+            <th>@Html.DisplayNameFor(x => x[0].ErrorMessage)</th>
+            <th></th>
+        </tr>
+        @foreach (var payment in Model)
+        {
+            var action = payment.isBlocked ? "Unblock" : "Block";
+            var btnClass = payment.isBlocked ? "btn-success" : "btn-danger";
+            <tr class="@(payment.isBlocked ? "table-danger" : "")">
+                <td>@Html.DisplayFor(x => payment.BillPayID)</td>
+                <td>@Html.DisplayFor(x => payment.AccountNumber)</td>
+                <td>@Html.DisplayFor(x => payment.PayeeID)</td>
+                <td>@Html.DisplayFor(x => payment.Amount)</td>
+                <td>@Html.DisplayFor(x => payment.ScheduleTimeUtc)</td>
+                <td>@Html.DisplayFor(x => payment.Period)</td>
+                <td>@Html.DisplayFor(x => payment.ErrorMessage)</td>
+                <td>
+                    <a class="btn @btnClass" asp-action="@action" asp-route-id="@payment.BillPayID">@action</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

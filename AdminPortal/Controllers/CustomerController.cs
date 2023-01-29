@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using AdminPortal.Filters;
 using AdminPortal.Models;
 using AdminPortal.ViewModels.Home;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace AdminPortal.Controllers;
 
+[AuthorizeCustomer]
 public class CustomerController : Controller
 {
     private readonly IHttpClientFactory _clientFactory;
@@ -54,15 +56,15 @@ public class CustomerController : Controller
 
     public async Task<IActionResult> Lock(int id)
     {
-        await Client.PutAsync($"api/login/{id}/lock",null);
-        
+        await Client.PutAsync($"api/login/{id}/lock", null);
+
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Unlock(int id)
     {
-        await Client.PutAsync($"api/login/{id}/unlock",null);
-        
+        await Client.PutAsync($"api/login/{id}/unlock", null);
+
         return RedirectToAction(nameof(Index));
     }
 

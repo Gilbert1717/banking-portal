@@ -21,7 +21,10 @@
         </tr>
         @foreach (var customer in Model.Customers)
         {
-            <tr>
+            var login = Model.Logins.First(x => x.CustomerID == customer.CustomerID);
+            var action = login.isLocked ? "Unlock" : "Lock";
+            var btnClass = login.isLocked ? "btn-success" : "btn-danger";
+            <tr class="@(login.isLocked ? "table-danger" : "")">
                 <td>@Html.DisplayFor(x => customer.CustomerID)</td>
                 <td>@Html.DisplayFor(x => customer.Name)</td>
                 <td>@Html.DisplayFor(x => customer.TFN)</td>
@@ -32,15 +35,7 @@
                 <td>@Html.DisplayFor(x => customer.Mobile)</td>
                 <td>
                     <a class="btn btn-primary" asp-action="Update" asp-route-id="@customer.CustomerID">Update</a>
-                    @{ var login = Model.Logins.First(x => x.CustomerID == customer.CustomerID); }
-                    @if (login.isLocked)
-                    {
-                        <a class="btn btn-success" asp-action="Unlock" asp-route-id="@login.LoginID">Unlock</a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-danger" asp-action="Lock" asp-route-id="@login.LoginID">Lock</a>
-                    }
+                    <a class="btn @btnClass" asp-action="@action" asp-route-id="@login.LoginID">@action</a>
                 </td>
             </tr>
         }
