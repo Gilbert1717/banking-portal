@@ -15,7 +15,7 @@ public class LoginRepository : IDataRepository<Login, int>
 
     public Login Get(int id)
     {
-        return _context.Logins.Find(id);
+        return _context.Logins.Find(id.ToString());
     }
 
     public void Update(Login login)

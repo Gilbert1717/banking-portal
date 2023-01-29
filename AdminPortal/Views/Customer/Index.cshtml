@@ -1,0 +1,43 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model AdminPortal.ViewModels.Home.IndexViewModel
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div>
+    <h1 class="display-4">MCBA Customers</h1>
+
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].CustomerID)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Name)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].TFN)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Address)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].City)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].State)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].PostCode)</th>
+            <th>@Html.DisplayNameFor(x => x.Customers[0].Mobile)</th>
+            <th></th>
+        </tr>
+        @foreach (var customer in Model.Customers)
+        {
+            var login = Model.Logins.First(x => x.CustomerID == customer.CustomerID);
+            var action = login.isLocked ? "Unlock" : "Lock";
+            var btnClass = login.isLocked ? "btn-success" : "btn-danger";
+            <tr class="@(login.isLocked ? "table-danger" : "")">
+                <td>@Html.DisplayFor(x => customer.CustomerID)</td>
+                <td>@Html.DisplayFor(x => customer.Name)</td>
+                <td>@Html.DisplayFor(x => customer.TFN)</td>
+                <td>@Html.DisplayFor(x => customer.Address)</td>
+                <td>@Html.DisplayFor(x => customer.City)</td>
+                <td>@Html.DisplayFor(x => customer.State)</td>
+                <td>@Html.DisplayFor(x => customer.PostCode)</td>
+                <td>@Html.DisplayFor(x => customer.Mobile)</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Update" asp-route-id="@customer.CustomerID">Update</a>
+                    <a class="btn @btnClass" asp-action="@action" asp-route-id="@login.LoginID">@action</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>

@@ -1,0 +1,69 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Customer
+@{
+    ViewData["Title"] = "Update Customer Profile";
+}
+
+<h1 class="display-4">Update Customer Profile</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Update">
+            <input type="hidden" asp-for="CustomerID" value="@Model.CustomerID"/>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TFN" class="control-label"></label>
+                <input asp-for="TFN" class="form-control" placeholder="XXX XXX XXX"/>
+                <span asp-validation-for="TFN" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control"/>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control"/>
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                <select name="State" id="State" class="form-control">
+                    <option value="" selected>-</option>
+                    @foreach (var state in Enum.GetValues(typeof(State)))
+                    {
+                        <option value="@state" selected="@(state.ToString().Equals(Model.State))">@state</option>
+                    }
+                </select>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostCode" class="control-label"></label>
+                <input asp-for="PostCode" class="form-control"/>
+                <span asp-validation-for="PostCode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Mobile" class="control-label"></label>
+                <input asp-for="Mobile" class="form-control" placeholder="04XX XXX XXX"/>
+                <span asp-validation-for="Mobile" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary"/>
+            </div>
+            @Html.ValidationMessage("UpdateFailed", new { @class = "text-danger" })
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to Customers</a>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

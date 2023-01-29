@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Admin Portal";
+}
+
+<div class="text-center">
+    <img src="~/img/bank.jpg" alt="bank"/>
+    <h1 class="display-4">MCBA - Admin Portal</h1>
+    <hr/>
+
+    @if (Context.Session.GetString("user") == null)
+    {
+        <h4>Please login to proceed</h4>
+
+        <div class="row">
+            <div class="col-md-4"></div>
+
+            <div class="col-md-4">
+                <form asp-action="Login">
+                    <div class="form-group">
+                        <label for="Username" class="control-label">Username</label>
+                        <input id="Username" name="Username" class="form-control"
+                               data-val="true" data-val-required="The Password field is required."/>
+                    </div>
+                    <div class="form-group">
+                        <label for="Password" class="control-label">Password</label>
+                        <input id="Password" name="Password" type="password" class="form-control"
+                               data-val="true" data-val-required="The Password field is required."/>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Login" class="btn btn-primary"/>
+                    </div>
+                    @Html.ValidationMessage("LoginFailed", new { @class = "text-danger" })
+                </form>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h4>Welcome back :)</h4>
+    }
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
